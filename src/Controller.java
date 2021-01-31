@@ -1,24 +1,5 @@
 import java.util.ArrayList;
 
-
-/* Methods used from model:
-data.getCustomers(),
-data.getPublishers(),
-data.addCustomer(),
-data.addPublisher(),
-data.setOnline(),
-data.remove(),
-data.setOnline(),
-data.getOnline(),
-
-customer.getSubscribed(),
-customer.addMoney(),
-customer.getMoney(),
-
-publisher.addPublished(),
-
-content.getPrice(),
-*/
 public class Controller{
 
     private final SystemData data;
@@ -29,74 +10,62 @@ public class Controller{
         this.data = data;
     }
 
-    ArrayList<Customer> getCustomers(){
-        return data.getCustomers();
-    }
-
-    ArrayList<Publisher> getPublishers(){
-        return data.getPublishers();
-    }
-
-    //This is equivalent of sign up.
-    void addCustomer(Customer customer){
-//        getCustomers().add(customer);
-        data.addCustomer(customer);
-    }
-
-    void addPublisher(Publisher publisher){
-//        getPublishers().add(publisher);
-        data.addPublisher(publisher);
-    }
-
-    //This is equivalent of sign in.Just sets the online customer.
-    void signIn(Customer customer){
-        data.setOnline(customer);
-    }
-
-    //This means that there is no online person.
-    void signOut(Customer customer){
-        if(data.getOnline().equals(customer))
-            data.setOnline(NULL);
-    }
-
-    void removeAccount(Customer customer){
-        data.remove(customer);
-    }
-
-    boolean customerExists(Customer customer){
-        for (Customer customer1: getCustomers()) {
-            if(customer.equals(customer1) )
-                return true;
+    //Used for the button on the first page.
+    void signInOut(Customer customer){
+        if ( ui.getSignInButtonName().equals("sign in") ) {
+            ui.showSignInPage();
         }
-        return false;
-    }
-
-    boolean customerHasContent(Customer customer, Content content){
-        for(Content content1: customer.getSubscribed() ){
-            if( content.equals(content1) )
-                return true;
-        }
-        return false;
-    }
-
-    //Adds a content to a customer's subscribed contents
-    void subscribe(Customer customer, Content content){
-        if(!customerHasContent(customer, content) && customer.getMoney() > content.getPrice() ){
-            customer.addSubscribed(content);
-            customer.pay(content.getPrice());
+        // sign out
+        else {
+            data.setOnline(null); //This means that the customer has logged out.
+            ui.getSignInPage().setSignInButtonName("sign in");
         }
     }
 
-    void addMoney(Customer customer, int money){
-        if(customerExists(customer))
-            customer.addMoney(money);
-    }
-
-    void postContent(Publisher publisher, Content content){
-        publisher.addPublished(content);
-        if(content.getPrice() == 0){
-            data.getPublicContents()
+    //Used for the sign in button in the signInPage.
+    void signIn(){
+        String UserName = ui.getSignInPage().getUserName();
+        String passWord = ui.getSignInPage().getPassWord();
+        if(data.hasSigned(UserName,passWord)){
+            Customer customer = data.getCustomer(UserName);
+            ui.closeSignInPage();
+            ui.setSignInButtonName("sign out");
+            ui.setSubscribedPage(customer.getSubscribed());
+            setupAccountBox(customer);
+        }
+        else if(data.hasCustomerWithName(UserName)){
+            //Wrong password.
+            ui.clearPasswordField();
+        }
+        else{
+            //Customer has not signed up yet. He/She should press the sign up button.
+            ui.clearUserNameField();
+            ui.clearPassWordField();
         }
     }
+
+    //Used for the sign up button in the signInPage.
+    void signUp(boolean isPublisher){
+        String userName = ui.getSignInPage().getUserName();
+        String passWord = ui.getSignInPage().getPassWord();
+        if(isPublisher)
+            data.addPublisher(Publisher(userName,passWord));
+        else
+            data.addCustomer(Customer(userName,passWord));
+        signIn();
+    }
+
+    void setupAccountBox(Customer customer){
+        ui.getAccountBox().setSubscribedContent(customer.getSubscribed());
+        ui.getAccountBox().setMoney(customer.getMoney());
+        ui.getAccountBox().setName(customer.getName());
+        ui.getAccountBox().setRole( customer.instanceOf(Publisher) ? "Publisher" : "Customer" );
+        if( customer.instanceOf(Publisher) ) {
+            Publisher publisher = (Publisher) customer;
+            ui.getAccountBox().setPublishedContent(publisher.getPublished());
+        }
+    }
+
+
 
 }
