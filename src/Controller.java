@@ -12,8 +12,8 @@ public class Controller{
 
     //Used for the button on the first page.
     void signInOut(Customer customer){
-        if ( ui.getSignInButtonName().equals("sign in") ) {
-            ui.showSignInPage();
+        if ( ui.getSignInPage().getSignInButtonName().equals("sign in") ) {
+            ui.getSignInPage().show();
         }
         // sign out
         else {
@@ -23,38 +23,37 @@ public class Controller{
     }
 
     //Used for the sign in button in the signInPage.
-    void signIn(){
-        String UserName = ui.getSignInPage().getUserName();
-        String passWord = ui.getSignInPage().getPassWord();
-        if(data.hasSigned(UserName,passWord)){
-            Customer customer = data.getCustomer(UserName);
-            ui.closeSignInPage();
-            ui.setSignInButtonName("sign out");
+    void signIn(String userName, String passWord){
+        if(data.hasSigned(userName,passWord)){
+            Customer customer = data.getCustomer(userName);
+            ui.getSignInPage().close();
+            ui.getSignInPage().setSignInButtonName("sign out");
             ui.setSubscribedPage(customer.getSubscribed());
             setupAccountBox(customer);
+            ui.getSignInPage().clearUserNameField();
+            ui.getSignInPage().clearPassWordField();
         }
-        else if(data.hasCustomerWithName(UserName)){
+        else if(data.hasCustomerWithName(userName)){
             //Wrong password.
-            ui.clearPasswordField();
+            ui.getSignInPage().clearPasswordField();
         }
         else{
             //Customer has not signed up yet. He/She should press the sign up button.
-            ui.clearUserNameField();
-            ui.clearPassWordField();
+            ui.getSignInPage().clearUserNameField();
+            ui.getSignInPage().clearPassWordField();
         }
     }
 
     //Used for the sign up button in the signInPage.
-    void signUp(boolean isPublisher){
-        String userName = ui.getSignInPage().getUserName();
-        String passWord = ui.getSignInPage().getPassWord();
+    void signUp(String userName, String passWord, boolean isPublisher){
         if(isPublisher)
             data.addPublisher(Publisher(userName,passWord));
         else
             data.addCustomer(Customer(userName,passWord));
-        signIn();
+        signIn(userName, passWord);
     }
 
+    //sets fields in the accountBox
     void setupAccountBox(Customer customer){
         ui.getAccountBox().setSubscribedContent(customer.getSubscribed());
         ui.getAccountBox().setMoney(customer.getMoney());
@@ -66,6 +65,24 @@ public class Controller{
         }
     }
 
+    //Used for the like button below a content.
+    void like(Content content){
+        content.incrementLikes();
+    }
+
+    //used for the comment button below a content.
+    void comment(Content content){
+        ui.getCommentBox().setComments(content.getComments());
+        ui.getCommentBox().clearCommentField();
+        ui.getCommentBox().show();
+    }
+
+    //used for the add button in the commentBox
+    void sendComment(String comment, Content content){
+        content.addComment(comment);
+        ui.getCommentBox().addComment(comment);
+        ui.getCommentBox().clearCommentField();
+    }
 
 
 }
