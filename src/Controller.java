@@ -1,3 +1,4 @@
+import java.io.FileWriter;
 import java.util.ArrayList;
 
 public class Controller{
@@ -59,9 +60,11 @@ public class Controller{
         ui.getAccountBox().setMoney(customer.getMoney());
         ui.getAccountBox().setName(customer.getName());
         ui.getAccountBox().setRole( customer.instanceOf(Publisher) ? "Publisher" : "Customer" );
+        ui.getAccontBox().disablePostButton();
         if( customer.instanceOf(Publisher) ) {
             Publisher publisher = (Publisher) customer;
             ui.getAccountBox().setPublishedContent(publisher.getPublished());
+            ui.getAccountBox().enablePostButton();
         }
     }
 
@@ -84,5 +87,31 @@ public class Controller{
         ui.getCommentBox().clearCommentField();
     }
 
+    //used for the download button below a content.
+    void downloadContent(Content content){
+        Customer onlineCustomer = data.getOnline();
+        try {
+            FileWriter writer = new FileWriter("./Downloads/" + onlineCustomer.getName() + ".txt");
+            writer.write(content.getData());
+            writer.close();
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    //used for the post button in the PostPage
+    void postContent(Publisher publisher, String title, String text, int price, boolean isDownloadable) {
+        Content content = new Content(title, text, price, isDownloadable);
+        publisher.addPublished(content);
+        if(price == 0) {
+            data.addPublicContent(content);
+            ui.getPublicPage().addContentBox(ContentBox(content));
+        }
+        else{
+            data.addStoreContent(content);
+            ui.getPublicPage().addContentBox(ContentBox(content));
+        }
+    }
 
 }
