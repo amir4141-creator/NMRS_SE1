@@ -89,6 +89,10 @@ public abstract class ProfilePanel extends JPanel {
         JOptionPane.showMessageDialog(null, message, "Privacy Policy", JOptionPane.INFORMATION_MESSAGE);
     }
 
+    protected void updateMoney() {
+        moneyLabel.setText("   Money: " + getMoney());
+    }
+
     protected abstract void deleteAccountAction();
 
     protected abstract void changeNameAction();
