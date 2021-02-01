@@ -66,7 +66,7 @@ public abstract class MainFrame extends JFrame implements Runnable {
 
         initComponents();
 
-        setState(State.SUBSCRIBE);
+        setState(State.LOGIN);
     }
 
     private void initComponents() {
@@ -78,13 +78,13 @@ public abstract class MainFrame extends JFrame implements Runnable {
 
             @Override
             protected void signUpAction() {
-                if (signUpActionLoginPanel())
+                if (signUpActionLoginPanel(userNameTextField.getText(), new String(passwordField.getPassword())))
                     goToMainState();
             }
 
             @Override
             protected void loginAction() {
-                if (loginActionLoginPanel())
+                if (loginActionLoginPanel(userNameTextField.getText(), new String(passwordField.getPassword())))
                     goToMainState();
             }
 
@@ -172,8 +172,8 @@ public abstract class MainFrame extends JFrame implements Runnable {
     }
 
     /// login panel
-    protected abstract boolean signUpActionLoginPanel();
-    protected abstract boolean loginActionLoginPanel();
+    protected abstract boolean signUpActionLoginPanel(String username, String password);
+    protected abstract boolean loginActionLoginPanel(String username, String password);
     ///
 
     /// post panel
@@ -188,9 +188,6 @@ public abstract class MainFrame extends JFrame implements Runnable {
     protected abstract int getMoneyProfilePanel();
     protected abstract Role getRoleProfilePanel();
     ///
-
-
-
 
     private void goToMainState() {
         setState(State.MAIN);
