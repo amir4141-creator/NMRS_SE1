@@ -53,6 +53,13 @@ public class SystemData {
         customers.remove(customerToDelete);
     }
 
+    public Boolean userExist(String userName, String password){
+        if (checkCustomerExist(userName, password))
+            return true;
+        else if(checkPublisherExist(userName, password))
+            return true;
+        return false;
+    }
 
     public Boolean checkCustomerExist(String userName, String passWord) {
         for (Customer customer : customers) {
@@ -72,7 +79,7 @@ public class SystemData {
         return false;
     }
 
-    public void PublishContent(Publisher publisher, Content content){
+    public void publishContent(Publisher publisher, Content content){
         publisher.publish(content);
 
         if (content.getPrice() == 0){
@@ -80,5 +87,13 @@ public class SystemData {
         }else {
             storeContents.add(content);
         }
+    }
+
+    public Customer getCustomer(String userName){
+        for(Customer customer: customers){
+            if(customer.getUserName().equals(userName))
+                return customer;
+        }
+        return null;
     }
 }

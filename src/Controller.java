@@ -1,5 +1,6 @@
-import models.Publisher;
+import models.*
 
+import java.io.File;
 import java.io.FileWriter;
 import java.util.ArrayList;
 
@@ -20,7 +21,7 @@ public class Controller{
         }
         // sign out
         else {
-            data.setOnline(null); //This means that the customer has logged out.
+            data.setOnline(-1); //This means that the customer has logged out.
             ui.getSignInPage().setSignInButtonName("sign in");
             ui.setInfo(null);
         }
@@ -28,7 +29,7 @@ public class Controller{
 
     //Used for the sign in button in the signInPage.
     void signIn(String userName, String passWord){
-        if(data.hasSigned(userName,passWord)){ // if the customer has signed and the password is correct
+        if(data.userExist(userName,passWord)){ // if the user has signed and the password is correct
             Customer customer = data.getCustomer(userName);
             ui.getSignInPage().close();
             ui.setSignInButtonName("sign out");
@@ -38,7 +39,7 @@ public class Controller{
             ui.getSignInPage().clearUserNameField();
             ui.getSignInPage().clearPassWordField();
         }
-        else if(data.hasCustomerWithName(userName)){
+        else if(data.getCustomer(userName) != null){
             //Wrong password.
             ui.getSignInPage().clearPasswordField();
         }
@@ -52,9 +53,9 @@ public class Controller{
     //Used for the sign up button in signInPage.
     void signUp(String userName, String passWord, boolean isPublisher){
         if(isPublisher)
-            data.addPublisher(Publisher(userName,passWord));
+            data.addCustomer(new Publisher(userName,passWord));
         else
-            data.addCustomer(Customer(userName,passWord));
+            data.addCustomer(new Customer(userName,passWord));
         signIn(userName, passWord);
     }
 
@@ -62,8 +63,8 @@ public class Controller{
     void setupAccountBox(Customer customer){
         ui.getAccountBox().setSubscribed(customer.getSubscribed());
         ui.getAccountBox().setMoney(customer.getMoney());
-        ui.getAccountBox().setName(customer.getName());
-        if( customer.instanceof(Publisher) ) {
+        ui.getAccountBox().setName(customer.getUserName());
+        if( customer instanceof Publisher ) {
             Publisher publisher = (Publisher) customer;
             ui.getAccountBox().setRole("Publisher");
             ui.getAccountBox().setPublishedContent(publisher.getPublished());
@@ -96,8 +97,8 @@ public class Controller{
 
     //used for the download button below a content.
     void downloadContent(Content content){
-        Customer onlineCustomer = data.getOnline();
-        String path = "./Downloads/" + onlineCustomer.getName() + "/";
+        Customer onlineCustomer = data.getOnlineCustomer();
+        String path = "./Downloads/" + onlineCustomer.getUserName() + "/";
         File file = new File(path);
         try {
             file.mkdir();
@@ -113,13 +114,11 @@ public class Controller{
     //used for the post button in PostPage
     void postContent(Publisher publisher, String title, String text, int price, boolean isDownloadable) {
         Content content = new Content(title, text, price, isDownloadable);
-        publisher.addPublished(content);
+        data.publishContent(publisher, content);
         if(price == 0) {
-            data.addPublicContent(content);
             ui.getPublicPage().addContentBox(ContentBox(content));
         }
         else{
-            data.addStoreContent(content);
             ui.getPublicPage().addContentBox(ContentBox(content));
         }
     }
@@ -133,8 +132,8 @@ public class Controller{
     //used for the delete account button in accountBox
     void deleteAccount(Customer customer){
         signInOut(customer);
-        data.setOnline(null);
-        data.removeCustomer(customer);
+        data.setOnline(-1);
+        data.removeCustomerAccount(customer);
     }
 
 }
