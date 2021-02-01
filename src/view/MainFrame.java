@@ -6,21 +6,25 @@ import view.states.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
 
-public class MainFrame extends JFrame implements Runnable {
+public abstract class MainFrame extends JFrame implements Runnable {
 
     private boolean isFullScreen;
     private MainPanel mainPanel;
     private LoginPanel loginPanel;
     private ProfilePanel profilePanel;
-    private SignUpPanel signUpPanel;
     private PostPanel postPanel;
+    private SubscribePanel subscribePanel;
+    private StartPanel startPanel;
+
 
     public MainFrame() {
         init();
     }
 
     private void init() {
+
         isFullScreen = false;
 
         setTitle("Newspaper And Magazine");
@@ -62,80 +66,134 @@ public class MainFrame extends JFrame implements Runnable {
 
         initComponents();
 
-        setState(State.PROFILE);
+        setState(State.SUBSCRIBE);
     }
 
     private void initComponents() {
         handleMenuBar();
 
-        mainPanel = new MainPanel();
+        mainPanel = new MainPanel() {};
+        startPanel = new StartPanel() {};
         loginPanel = new LoginPanel() {
 
             @Override
             protected void signUpAction() {
-
+                if (signUpActionLoginPanel())
+                    goToMainState();
             }
 
             @Override
             protected void loginAction() {
-
+                if (loginActionLoginPanel())
+                    goToMainState();
             }
 
             @Override
             protected void backAction() {
-
+                goToMainState();
             }
         };
-
         postPanel = new PostPanel() {
             @Override
             protected void backAction() {
-
+                goToMainState();
             }
 
             @Override
             protected void postAction() {
-
+                postActionPostPanel();
+                goToMainState();
             }
         };
         profilePanel = new ProfilePanel() {
 
             @Override
             protected void deleteAccountAction() {
-
+                setState(State.START);
+                deleteActionProfilePanel();
             }
 
             @Override
             protected void changeNameAction() {
-
+                var ft = new JTextField("NewName...");
+                if (JOptionPane.showConfirmDialog(null, ft) != JOptionPane.OK_OPTION)
+                    return;
+                if (changeNameActionProfilePanel(ft.getText()))
+                    nameLabel.setText(ft.getText());
             }
 
             @Override
             protected void addMoneyAction() {
-
+                var mt = new JTextField("Money Amount(int)....");
+                if (JOptionPane.showConfirmDialog(null, mt) != JOptionPane.OK_OPTION)
+                    return;
+                try {
+                    if (addMoneyActionProfilePanel(Integer.parseInt(mt.getText())))
+                        updateMoney();
+                } catch (NumberFormatException ignore) {}
             }
 
             @Override
             protected String getCustomerName() {
-                return null;
+                return getNameProfilePanel();
             }
 
             @Override
             protected int getMoney() {
-                return 0;
+                return getMoneyProfilePanel();
             }
 
             @Override
             protected Role getRole() {
-                return null;
+                return getRoleProfilePanel();
             }
 
             @Override
             protected void backAction() {
-
+                goToMainState();
             }
         };
-        signUpPanel = new SignUpPanel();
+        subscribePanel = new SubscribePanel() {
+            @Override
+            protected void backAction() {
+
+            }
+
+            @Override
+            protected String[] getPublisherNames() {
+                return new String[] {"amir", "amir", "amir", "amir"};
+            }
+
+            @Override
+            protected void okButtonAction(ArrayList<String> selectedPublisherNames) {
+                System.out.println(selectedPublisherNames);
+            }
+        };
+    }
+
+    /// login panel
+    protected abstract boolean signUpActionLoginPanel();
+    protected abstract boolean loginActionLoginPanel();
+    ///
+
+    /// post panel
+    protected abstract void postActionPostPanel();
+    ///
+
+    /// profile panel
+    protected abstract void deleteActionProfilePanel();
+    protected abstract boolean changeNameActionProfilePanel(String nawName);
+    protected abstract boolean addMoneyActionProfilePanel(int changeMoneyAmount);
+    protected abstract String getNameProfilePanel();
+    protected abstract int getMoneyProfilePanel();
+    protected abstract Role getRoleProfilePanel();
+    ///
+
+
+
+
+    private void goToMainState() {
+        setState(State.MAIN);
     }
 
     private void setState(State state) {
@@ -145,10 +203,12 @@ public class MainFrame extends JFrame implements Runnable {
             setContentPane(mainPanel);
         } else if (state == State.PROFILE) {
             setContentPane(profilePanel);
-        } else if (state == State.SIGNUP) {
-            setContentPane(signUpPanel);
         } else if (state == State.POST) {
             setContentPane(postPanel);
+        } else if (state == State.SUBSCRIBE) {
+            setContentPane(subscribePanel);
+        } else if (state == State.START) {
+            setContentPane(startPanel);
         }
     }
 
