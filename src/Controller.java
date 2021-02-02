@@ -1,4 +1,4 @@
-import models.*
+import models.*;
 
 import java.io.File;
 import java.io.FileWriter;

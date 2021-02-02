@@ -41,12 +41,14 @@ public class Customer {
         return false;
     }
 
-    void subscribe(Content content){
+    public void subscribe(Content content){
         if(!customerHasContent(content) && getMoney() > content.getPrice() ){
             subscribed.add(content);
         }
     }
 
-
+    public void changeName(String newName){
+        userName = newName;
+    }
 
 }

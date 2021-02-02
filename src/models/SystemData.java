@@ -6,8 +6,8 @@ public class SystemData {
     private ArrayList<Customer> customers;
     private ArrayList<Publisher> publishers;
 
-    private ArrayList<Content> storeContents;
-    private ArrayList<Content> publicContents;
+    private ArrayList<Content> contents;
+//    private ArrayList<Content> publicContents;
 
     private int onlineIndex;
 
@@ -15,8 +15,8 @@ public class SystemData {
         customers = new ArrayList<Customer>();
         publishers = new ArrayList<Publisher>();
 
-        storeContents = new ArrayList<Content>();
-        publicContents = new ArrayList<Content>();
+        contents = new ArrayList<Content>();
+//        publicContents = new ArrayList<Content>();
 
         onlineIndex = -1;
     }
@@ -81,12 +81,12 @@ public class SystemData {
 
     public void publishContent(Publisher publisher, Content content){
         publisher.publish(content);
-
-        if (content.getPrice() == 0){
-            publicContents.add(content);
-        }else {
-            storeContents.add(content);
-        }
+        contents.add(content);
+//        if (content.getPrice() == 0){
+//            publicContents.add(content);
+//        }else {
+//            storeContents.add(content);
+//        }
     }
 
     public Customer getCustomer(String userName){
@@ -95,5 +95,25 @@ public class SystemData {
                 return customer;
         }
         return null;
+    }
+
+    public int getLastContentIndex(){
+        return contents.size()-1;
+    }
+
+    public boolean userExist(String name){
+        for (Customer customer: customers) {
+            if(customer.getUserName().equals(name))
+                return true;
+        }
+        for(Publisher publisher: publishers){
+            if(publisher.getUserName().equals(name))
+                return true;
+        }
+        return false;
+    }
+
+    public ArrayList<Content> getContents(){
+        return contents;
     }
 }
