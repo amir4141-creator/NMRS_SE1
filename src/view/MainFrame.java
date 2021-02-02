@@ -135,24 +135,12 @@ public abstract class MainFrame extends JFrame implements Runnable {
 
             @Override
             protected void downloadButtonAction(int index) {
-
+                MainFrame.this.downloadButtonAction(index);
             }
 
             @Override
             protected void commentButtonAction(int index) {
-                var cd = new CommentDialog() {
-                    @Override
-                    protected void commitAction() {
-                        var content = commentTextField.getText();
-                        if (content.replace(" ", "").isEmpty())
-                            return;
-                        var arr = new String[] {getNameProfilePanel(), content};
-                        if (addComment(index, arr))
-                            insertComment(arr);
-                    }
-                };
-                cd.addAllComments(getCommentByIndex(index));
-                cd.setVisible(true);
+                commentAction(this, index);
             }
         };
         startPanel = new StartPanel() {
@@ -163,7 +151,7 @@ public abstract class MainFrame extends JFrame implements Runnable {
 
             @Override
             protected Role getRole() {
-                return null;
+                return getRoleProfilePanel();
             }
 
             @Override
@@ -171,64 +159,65 @@ public abstract class MainFrame extends JFrame implements Runnable {
                 return new ArrayList<>();
             }
 
+            // logout == sign in
             @Override
             protected void logoutButtonAction() {
-
+                setState(State.LOGIN);
             }
 
             @Override
             protected void subscribeButtonAction() {
-
+                goToMainState();
             }
 
             @Override
             protected void profileButtonAction() {
-
+                setState(State.PROFILE);
             }
 
             @Override
             protected void publishNewMagazineButtonAction() {
-
+                setState(State.POST);
             }
 
             @Override
             protected String getTitle(int index) {
-                return null;
+                return MainFrame.this.getTitle(index);
             }
 
             @Override
             protected String getContent(int index) {
-                return null;
+                return MainFrame.this.getContent(index);
             }
 
             @Override
             protected boolean isDownloadable(int index) {
-                return false;
+                return MainFrame.this.isDownloadable(index);
             }
 
             @Override
             protected int getLikeNumber(int index) {
-                return 0;
+                return MainFrame.this.getLikeNumber(index);
             }
 
             @Override
             protected void incrementLikeNumber(int index) {
-
+                MainFrame.this.incrementLikeByIndex(index);
             }
 
             @Override
             protected void decrementLikeNumber(int index) {
-
+                MainFrame.this.decrementLikeByIndex(index);
             }
 
             @Override
             protected void downloadButtonAction(int index) {
-
+                MainFrame.this.downloadButtonAction(index);
             }
 
             @Override
             protected void commentButtonAction(int index) {
-
+                commentAction(this, index);
             }
         };
         loginPanel = new LoginPanel() {
@@ -318,17 +307,17 @@ public abstract class MainFrame extends JFrame implements Runnable {
         subscribePanel = new SubscribePanel() {
             @Override
             protected void backAction() {
-
+                goToMainState();
             }
 
             @Override
             protected String[] getPublisherNames() {
-                return new String[] {"amir", "amir", "amir", "amir"};
+                return getPublishersNameArraySubscribePanel();
             }
 
             @Override
             protected void okButtonAction(ArrayList<String> selectedPublisherNames) {
-                System.out.println(selectedPublisherNames);
+                setSubscribedPublishersSubscribePanel(selectedPublisherNames);
             }
         };
     }
@@ -352,6 +341,11 @@ public abstract class MainFrame extends JFrame implements Runnable {
     protected abstract Role getRoleProfilePanel();
     ///
 
+    /// subscribe panel
+    protected abstract String[] getPublishersNameArraySubscribePanel();
+    protected abstract void setSubscribedPublishersSubscribePanel(ArrayList<String> selectedPublisherNames);
+    ///
+
     /// main panel
     protected abstract String getTitle(int index);
     protected abstract String getContent(int index);
@@ -359,6 +353,7 @@ public abstract class MainFrame extends JFrame implements Runnable {
     protected abstract boolean isDownloadable(int index);
     protected abstract ArrayList<Integer> getMagazineIndexList();
     protected abstract void logoutButtonAction();
+    protected abstract void downloadButtonAction(int index);
     ///
 
     /// main panel
@@ -374,6 +369,22 @@ public abstract class MainFrame extends JFrame implements Runnable {
     protected abstract void incrementLikeByIndex(int index);
     protected abstract void decrementLikeByIndex(int index);
     ///
+
+    private void commentAction(MainPanel mainPanel, int index) {
+        var cd = new CommentDialog() {
+            @Override
+            protected void commitAction() {
+                var content = commentTextField.getText();
+                if (content.replace(" ", "").isEmpty())
+                    return;
+                var arr = new String[] {getNameProfilePanel(), content};
+                if (addComment(index, arr))
+                    insertComment(arr);
+            }
+        };
+        cd.addAllComments(getCommentByIndex(index));
+        cd.setVisible(true);
+    }
 
     private void goToMainState() {
         setState(State.MAIN);
