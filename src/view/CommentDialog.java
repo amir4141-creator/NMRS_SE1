@@ -3,6 +3,7 @@ package view;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.util.ArrayList;
 
 public abstract class CommentDialog extends JDialog {
 
@@ -15,6 +16,7 @@ public abstract class CommentDialog extends JDialog {
     }
 
     private void init() {
+        setSize(300, 400);
         setLayout(new BorderLayout(20, 20));
 
         comments = new JTable(new DefaultTableModel(new Object[][] {}, new Object[] {"No.", "UserName", "Comment"}));
@@ -37,19 +39,17 @@ public abstract class CommentDialog extends JDialog {
         wrapper.add(commentTextField, BorderLayout.CENTER);
         wrapper.add(commit, BorderLayout.EAST);
 
-        insertComment("Amir", "JAFAR");
-        insertComment("Amir", "JAFAR");
-        insertComment("Amir", "JAFAR");
-        insertComment("Amir", "JAFAR");
-        insertComment("Amir", "JAFAR");
-
         add(wrapper, BorderLayout.SOUTH);
 
         ((JPanel) getContentPane()).setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
     }
 
-    protected void insertComment(String name, String comment) {
-        ((DefaultTableModel) comments.getModel()).addRow(new Object[] {comments.getRowCount()+1, name, comment});
+    protected void insertComment(String[] comment) {
+        ((DefaultTableModel) comments.getModel()).addRow(new Object[] {comments.getRowCount()+1, comment[0], comment[1]});
+    }
+
+    protected void addAllComments(ArrayList<String[]> comments) {
+        comments.forEach(this::insertComment);
     }
 
     protected abstract void commitAction();

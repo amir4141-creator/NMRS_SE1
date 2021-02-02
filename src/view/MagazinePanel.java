@@ -11,16 +11,21 @@ public abstract class MagazinePanel extends JPanel {
     private JButton likeButton;
     private JButton downloadButton;
     protected boolean isLiked;
+    protected final int index;
 
-    public MagazinePanel() {
+    public MagazinePanel(int index) {
+        this.index = index;
         init();
     }
 
     private void init() {
         setLayout(new BorderLayout(5, 5));
+        setMaximumSize(new Dimension(Integer.MAX_VALUE, 350));
+        setMinimumSize(new Dimension(Integer.MAX_VALUE, 350));
 
         content = new JTextArea(getContent());
         content.setEditable(false);
+        content.setLineWrap(true);
         titleLabel = new JLabel(getTitle(), JLabel.CENTER);
         commentButton = new JButton("Comments");
         commentButton.addActionListener(e -> commentButtonAction());
@@ -65,6 +70,10 @@ public abstract class MagazinePanel extends JPanel {
                 BorderFactory.createEmptyBorder(5, 5, 5, 5),
                 BorderFactory.createLoweredBevelBorder()
         ));
+    }
+
+    protected void updateLikeButton() {
+        likeButton.setText("Like - " + getLikeNumber());
     }
 
     protected abstract String getTitle();
