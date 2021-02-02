@@ -9,7 +9,7 @@ public class Content {
     private String data;
     private int price;
     private Boolean isDownloadable;
-    private ArrayList<String> comments;
+    private ArrayList<String[]> comments;
     private int likes;
     private Date creationDate;
 
@@ -18,7 +18,7 @@ public class Content {
         this.data = data;
         this.price = price;
         this.isDownloadable = isDownloadable;
-        this.comments = new ArrayList<String>();
+        this.comments = new ArrayList<String[]>();
         this.likes = 0;
         this.creationDate = new Date();
     }
@@ -39,7 +39,7 @@ public class Content {
         return isDownloadable;
     }
 
-    public ArrayList<String> getComments() {
+    public ArrayList<String[]> getComments() {
         return comments;
     }
 
@@ -47,11 +47,15 @@ public class Content {
         return likes;
     }
 
-    public void addComment(String newComment) {
+    public void addComment(String[] newComment) {
         comments.add(newComment);
     }
 
     public void incrementLikes() {
         likes++;
+    }
+
+    public void decrementLikes(){
+        likes--;
     }
 }
