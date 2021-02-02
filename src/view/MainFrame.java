@@ -18,7 +18,6 @@ public abstract class MainFrame extends JFrame implements Runnable {
     private SubscribePanel subscribePanel;
     private StartPanel startPanel;
 
-
     public MainFrame() {
         init();
     }
@@ -66,14 +65,172 @@ public abstract class MainFrame extends JFrame implements Runnable {
 
         initComponents();
 
-        setState(State.LOGIN);
+        setState(State.START);
     }
 
     private void initComponents() {
         handleMenuBar();
 
-        mainPanel = new MainPanel() {};
-        startPanel = new StartPanel() {};
+        mainPanel = new MainPanel() {
+            @Override
+            protected Role getRole() {
+                return getRoleProfilePanel();
+            }
+
+            @Override
+            protected ArrayList<Integer> getMagazineIndexArray() {
+                return getMagazineIndexList();
+            }
+
+            @Override
+            protected void logoutButtonAction() {
+                MainFrame.this.logoutButtonAction();
+                setState(State.LOGIN);
+            }
+
+            @Override
+            protected void subscribeButtonAction() {
+                setState(State.SUBSCRIBE);
+            }
+
+            @Override
+            protected void profileButtonAction() {
+                setState(State.PROFILE);
+            }
+
+            @Override
+            protected void publishNewMagazineButtonAction() {
+                setState(State.POST);
+            }
+
+            @Override
+            protected String getTitle(int index) {
+                return MainFrame.this.getTitle(index);
+            }
+
+            @Override
+            protected String getContent(int index) {
+                return MainFrame.this.getContent(index);
+            }
+
+            @Override
+            protected boolean isDownloadable(int index) {
+                return MainFrame.this.isDownloadable(index);
+            }
+
+            @Override
+            protected int getLikeNumber(int index) {
+                return MainFrame.this.getLikeNumber(index);
+            }
+
+            @Override
+            protected void incrementLikeNumber(int index) {
+                incrementLikeByIndex(index);
+            }
+
+            @Override
+            protected void decrementLikeNumber(int index) {
+                decrementLikeByIndex(index);
+            }
+
+            @Override
+            protected void downloadButtonAction(int index) {
+
+            }
+
+            @Override
+            protected void commentButtonAction(int index) {
+                var cd = new CommentDialog() {
+                    @Override
+                    protected void commitAction() {
+                        var content = commentTextField.getText();
+                        if (content.replace(" ", "").isEmpty())
+                            return;
+                        var arr = new String[] {getNameProfilePanel(), content};
+                        if (addComment(index, arr))
+                            insertComment(arr);
+                    }
+                };
+                cd.addAllComments(getCommentByIndex(index));
+                cd.setVisible(true);
+            }
+        };
+        startPanel = new StartPanel() {
+            @Override
+            protected ArrayList<Integer> getPubicMagazineIndexes() {
+                return new ArrayList<>();
+            }
+
+            @Override
+            protected Role getRole() {
+                return null;
+            }
+
+            @Override
+            protected ArrayList<Integer> getMagazineIndexArray() {
+                return new ArrayList<>();
+            }
+
+            @Override
+            protected void logoutButtonAction() {
+
+            }
+
+            @Override
+            protected void subscribeButtonAction() {
+
+            }
+
+            @Override
+            protected void profileButtonAction() {
+
+            }
+
+            @Override
+            protected void publishNewMagazineButtonAction() {
+
+            }
+
+            @Override
+            protected String getTitle(int index) {
+                return null;
+            }
+
+            @Override
+            protected String getContent(int index) {
+                return null;
+            }
+
+            @Override
+            protected boolean isDownloadable(int index) {
+                return false;
+            }
+
+            @Override
+            protected int getLikeNumber(int index) {
+                return 0;
+            }
+
+            @Override
+            protected void incrementLikeNumber(int index) {
+
+            }
+
+            @Override
+            protected void decrementLikeNumber(int index) {
+
+            }
+
+            @Override
+            protected void downloadButtonAction(int index) {
+
+            }
+
+            @Override
+            protected void commentButtonAction(int index) {
+
+            }
+        };
         loginPanel = new LoginPanel() {
 
             @Override
@@ -101,7 +258,12 @@ public abstract class MainFrame extends JFrame implements Runnable {
 
             @Override
             protected void postAction() {
-                postActionPostPanel();
+                try {
+                    mainPanel.insertMagazine(postActionPostPanel(title.getText(), textArea.getText(),
+                            Integer.parseInt(price.getText()), downloadableCheckBox.isSelected(), publicCheckBox.isSelected()));
+                } catch (Exception e) {
+                    return;
+                }
                 goToMainState();
             }
         };
@@ -177,7 +339,8 @@ public abstract class MainFrame extends JFrame implements Runnable {
     ///
 
     /// post panel
-    protected abstract void postActionPostPanel();
+    // last index should be returned
+    protected abstract int postActionPostPanel(String title, String content, int price, boolean isDownloadable, boolean isPublic);
     ///
 
     /// profile panel
@@ -187,6 +350,29 @@ public abstract class MainFrame extends JFrame implements Runnable {
     protected abstract String getNameProfilePanel();
     protected abstract int getMoneyProfilePanel();
     protected abstract Role getRoleProfilePanel();
+    ///
+
+    /// main panel
+    protected abstract String getTitle(int index);
+    protected abstract String getContent(int index);
+    protected abstract int getLikeNumber(int index);
+    protected abstract boolean isDownloadable(int index);
+    protected abstract ArrayList<Integer> getMagazineIndexList();
+    protected abstract void logoutButtonAction();
+    ///
+
+    /// main panel
+    // 0 is name, 1 is content
+    protected abstract ArrayList<String[]> getCommentByIndex(int index);
+    ///
+
+    /// comment dialog
+    protected abstract boolean addComment(int magazineIndex, String[] newComment);
+    ///
+
+    /// magazine panel
+    protected abstract void incrementLikeByIndex(int index);
+    protected abstract void decrementLikeByIndex(int index);
     ///
 
     private void goToMainState() {
