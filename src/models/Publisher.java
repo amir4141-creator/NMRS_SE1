@@ -6,6 +6,7 @@ public class Publisher extends Customer{
     private ArrayList<Content> published;
     public Publisher(String userName , String passWord) {
         super(userName,passWord);
+        published = new ArrayList<Content>();
     }
 
     public void publish(Content newContent){
