@@ -31,9 +31,6 @@ public abstract class LoginPanel extends JPanel {
         add(userNameTextField);
         add(passwordField);
 
-        add(userNameTextField);
-        add(passwordField);
-
         JPanel wrapper = new JPanel(new GridLayout(1, 3));
         wrapper.add(loginButton);
         wrapper.add(signUpButton);

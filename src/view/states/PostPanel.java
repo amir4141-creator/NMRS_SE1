@@ -8,6 +8,7 @@ public abstract class PostPanel extends JPanel {
     protected JTextArea textArea;
     protected JButton postButton;
     protected JCheckBox downloadableCheckBox;
+    protected JCheckBox publicCheckBox;
     protected JTextField title;
     protected JTextField price;
 
@@ -20,6 +21,7 @@ public abstract class PostPanel extends JPanel {
         textArea = new JTextArea("Content...");
         postButton = new JButton("Post");
         downloadableCheckBox = new JCheckBox("Downloadable");
+        publicCheckBox = new JCheckBox("Public");
         title = new JTextField("Title...");
         title.setFont(new Font("serif", Font.BOLD, 28));
         title.setPreferredSize(new Dimension(600, 60));
@@ -28,10 +30,11 @@ public abstract class PostPanel extends JPanel {
         var wrapper = new JPanel(new BorderLayout(20, 20));
         var j1 = new JPanel(new FlowLayout(FlowLayout.LEFT));
         j1.add(title);
-        var j2 = new JPanel(new GridLayout(1, 2, 600, 0));
+        var j2 = new JPanel(new GridLayout(1, 3, 400, 0));
         j2.setPreferredSize(new Dimension(1280, 50));
         j2.add(price);
         j2.add(downloadableCheckBox);
+        j2.add(publicCheckBox);
         wrapper.add(textArea, BorderLayout.CENTER);
         wrapper.add(j1, BorderLayout.NORTH);
         wrapper.add(j2, BorderLayout.SOUTH);
