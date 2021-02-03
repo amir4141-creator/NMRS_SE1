@@ -15,9 +15,16 @@ public class Controller {
             public SystemData data;
 
             @Override
-            protected boolean signUpActionLoginPanel(String username, String password) {
-                //todo: sign up as publisher or customer??
-                return false;
+            protected boolean signUpActionLoginPanel(String username, String password, Role role) {
+                if (data.userExist(username))
+                    return false;
+
+                if (role == Role.PUBLISHER)
+                    data.addCustomer(new Publisher(username, password));
+                else
+                    data.addCustomer(new Customer(username, password));
+
+                return true;
             }
 
             @Override

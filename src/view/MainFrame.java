@@ -1,6 +1,7 @@
 package view;
 
 import model.Role;
+import models.Role;
 import view.states.*;
 
 import javax.swing.*;
