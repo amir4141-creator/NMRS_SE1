@@ -1,6 +1,6 @@
 package view;
 
-import models.Role;
+import model.Role;
 import view.states.*;
 
 import javax.swing.*;
@@ -224,7 +224,7 @@ public abstract class MainFrame extends JFrame implements Runnable {
 
             @Override
             protected void signUpAction() {
-                if (signUpActionLoginPanel(userNameTextField.getText(), new String(passwordField.getPassword())))
+                if (signUpActionLoginPanel(userNameTextField.getText(), new String(passwordField.getPassword()), Role.valueOf((String) role.getSelectedItem())))
                     goToMainState();
             }
 
@@ -323,7 +323,7 @@ public abstract class MainFrame extends JFrame implements Runnable {
     }
 
     /// login panel
-    protected abstract boolean signUpActionLoginPanel(String username, String password);
+    protected abstract boolean signUpActionLoginPanel(String username, String password, Role role);
     protected abstract boolean loginActionLoginPanel(String username, String password);
     ///
 
