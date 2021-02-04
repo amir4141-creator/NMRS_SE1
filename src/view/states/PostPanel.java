@@ -53,6 +53,14 @@ public abstract class PostPanel extends JPanel {
         setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
     }
 
+    public void prepare() {
+        textArea.setText("Content...");
+        title.setText("Title...");
+        price.setText("Price...");
+        downloadableCheckBox.setSelected(false);
+        publicCheckBox.setSelected(false);
+    }
+
     protected abstract void backAction();
     protected abstract void postAction();
 }

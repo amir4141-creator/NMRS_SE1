@@ -1,5 +1,7 @@
 package view.states;
 
+import model.Role;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -10,6 +12,7 @@ public abstract class LoginPanel extends JPanel {
     protected JButton loginButton;
     protected JButton signUpButton;
     protected JButton backButton;
+    protected JComboBox<Role> role;
 
     public LoginPanel() {
         setLayout(new GridLayout(3, 1, 50, 30));
@@ -18,7 +21,10 @@ public abstract class LoginPanel extends JPanel {
     }
 
     private void init() {
-        userNameTextField = new JTextField();
+        role = new JComboBox<>();
+        role.addItem(Role.PUBLISHER);
+        role.addItem(Role.CUSTOMER);
+        userNameTextField = new JTextField("username...");
         passwordField = new JPasswordField();
         loginButton = new JButton("Login");
         signUpButton = new JButton("Sign Up");
@@ -31,10 +37,12 @@ public abstract class LoginPanel extends JPanel {
         add(userNameTextField);
         add(passwordField);
 
-        JPanel wrapper = new JPanel(new GridLayout(1, 3));
+        JPanel wrapper = new JPanel(new GridLayout(1, 4));
+        wrapper.add(role);
         wrapper.add(loginButton);
         wrapper.add(signUpButton);
         wrapper.add(backButton);
+        wrapper.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
 
         add(wrapper);
 
@@ -43,7 +51,7 @@ public abstract class LoginPanel extends JPanel {
                 BorderFactory.createCompoundBorder(
                 BorderFactory.createEmptyBorder(200, 450, 200, 450),
                 BorderFactory.createLineBorder(Color.GRAY.darker(), 3)),
-                        BorderFactory.createEmptyBorder(5, 5, 5, 5)));
+                        BorderFactory.createEmptyBorder(5, 5, 0, 5)));
     }
 
     protected abstract void signUpAction();

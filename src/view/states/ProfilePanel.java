@@ -5,6 +5,7 @@ import model.Role;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.util.ArrayList;
 
 public abstract class ProfilePanel extends JPanel {
 
@@ -21,7 +22,7 @@ public abstract class ProfilePanel extends JPanel {
 
     public ProfilePanel() {
         setLayout(new BorderLayout(20, 20));
-        init();
+        prepare();
     }
 
     private void init() {
@@ -41,7 +42,8 @@ public abstract class ProfilePanel extends JPanel {
         subscribed.setModel(new DefaultTableModel(new Object[][] {}, new Object[] {"No.", "Name"}));
         subscribed.getColumnModel().getColumn(0).setMaxWidth(50);
         subscribed.setRowHeight(40);
-        published = new JTable(new Object[][] {}, new Object[] {"No.", "Name"});
+        published = new JTable();
+        published.setModel(new DefaultTableModel(new Object[][] {}, new Object[] {"No.", "Name"}));
         published.getColumnModel().getColumn(0).setMaxWidth(50);
         published.setRowHeight(40);
 
@@ -68,8 +70,6 @@ public abstract class ProfilePanel extends JPanel {
 
         add(wrapper2, BorderLayout.CENTER);
 
-        insertSubscribe("AMIR_HOSSEIN");
-        insertSubscribe("ARMAN");
 
         nameLabel.setText("   Name: " + getCustomerName());
         roleLabel.setText("   Role: " + getRole());
@@ -80,6 +80,9 @@ public abstract class ProfilePanel extends JPanel {
         wrapper3.add(backButton);
 
         add(wrapper3, BorderLayout.SOUTH);
+
+        getSubscribedMagazine().forEach(this::insertSubscribe);
+        getPublishedMagazine().forEach(this::insertPublished);
 
         setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
     }
@@ -105,6 +108,11 @@ public abstract class ProfilePanel extends JPanel {
 
     protected abstract Role getRole();
 
+    public void prepare() {
+        removeAll();
+        init();
+    }
+
     protected void insertSubscribe(String name) {
         ((DefaultTableModel) subscribed.getModel()).addRow(new Object[] {subscribed.getRowCount()+1, name});
     }
@@ -112,6 +120,9 @@ public abstract class ProfilePanel extends JPanel {
     protected void insertPublished(String name) {
         ((DefaultTableModel) published.getModel()).addRow(new Object[] {published.getRowCount()+1, name});
     }
+
+    protected abstract ArrayList<String> getSubscribedMagazine();
+    protected abstract ArrayList<String> getPublishedMagazine();
 
     protected abstract void backAction();
 }
