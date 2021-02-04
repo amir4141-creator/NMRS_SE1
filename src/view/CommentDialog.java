@@ -18,6 +18,8 @@ public abstract class CommentDialog extends JDialog {
     private void init() {
         setSize(300, 400);
         setLayout(new BorderLayout(20, 20));
+        setLocationByPlatform(false);
+        setLocationRelativeTo(null);
 
         comments = new JTable(new DefaultTableModel(new Object[][] {}, new Object[] {"No.", "UserName", "Comment"}));
 

@@ -1,17 +1,19 @@
 package view;
 
 import model.Role;
-import models.Role;
 import view.states.*;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public abstract class MainFrame extends JFrame implements Runnable {
 
     private boolean isFullScreen;
+    private boolean isDarkTheme = true;
+    private boolean isFirstCompile = true;
     private MainPanel mainPanel;
     private LoginPanel loginPanel;
     private ProfilePanel profilePanel;
@@ -40,33 +42,11 @@ public abstract class MainFrame extends JFrame implements Runnable {
             }
         });
 
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (Exception ignore) {}
-
-        UIManager.put("control", Color.DARK_GRAY.darker());
-        UIManager.put("info", new Color(128,128,128));
-        UIManager.put("nimbusBase", new Color( 18, 30, 49));
-        UIManager.put("nimbusAlertYellow", new Color( 248, 187, 0));
-        UIManager.put("nimbusDisabledText", new Color( 128, 128, 128));
-        UIManager.put("nimbusFocus", new Color(115,164,209));
-        UIManager.put("nimbusGreen", new Color(176,179,50));
-        UIManager.put("nimbusInfoBlue", new Color( 66, 139, 221));
-        UIManager.put("nimbusLightBackground", Color.DARK_GRAY);
-        UIManager.put("nimbusOrange", new Color(191,98,4));
-        UIManager.put("nimbusRed", new Color(169,46,34) );
-        UIManager.put("nimbusSelectedText", new Color( 255, 255, 255));
-        UIManager.put("nimbusSelectionBackground", new Color( 104, 93, 156));
-        UIManager.put("text", new Color( 230, 230, 230));
+        handleUIManager();
 
         initComponents();
 
-        setState(State.START);
+        setState(State.MAIN);
     }
 
     private void initComponents() {
@@ -141,7 +121,7 @@ public abstract class MainFrame extends JFrame implements Runnable {
 
             @Override
             protected void commentButtonAction(int index) {
-                commentAction(this, index);
+                commentAction(index);
             }
         };
         startPanel = new StartPanel() {
@@ -218,14 +198,14 @@ public abstract class MainFrame extends JFrame implements Runnable {
 
             @Override
             protected void commentButtonAction(int index) {
-                commentAction(this, index);
+                commentAction(index);
             }
         };
         loginPanel = new LoginPanel() {
 
             @Override
             protected void signUpAction() {
-                if (signUpActionLoginPanel(userNameTextField.getText(), new String(passwordField.getPassword()), Role.valueOf((String) role.getSelectedItem())))
+                if (signUpActionLoginPanel(userNameTextField.getText(), new String(passwordField.getPassword()), (Role) role.getSelectedItem()))
                     goToMainState();
             }
 
@@ -237,7 +217,7 @@ public abstract class MainFrame extends JFrame implements Runnable {
 
             @Override
             protected void backAction() {
-                goToMainState();
+                setState(State.START);
             }
         };
         postPanel = new PostPanel() {
@@ -252,6 +232,7 @@ public abstract class MainFrame extends JFrame implements Runnable {
                     mainPanel.insertMagazine(postActionPostPanel(title.getText(), textArea.getText(),
                             Integer.parseInt(price.getText()), downloadableCheckBox.isSelected(), publicCheckBox.isSelected()));
                 } catch (Exception e) {
+                    JOptionPane.showMessageDialog(null, "Error", "Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
                 goToMainState();
@@ -268,7 +249,7 @@ public abstract class MainFrame extends JFrame implements Runnable {
             @Override
             protected void changeNameAction() {
                 var ft = new JTextField("NewName...");
-                if (JOptionPane.showConfirmDialog(null, ft) != JOptionPane.OK_OPTION)
+                if (JOptionPane.showConfirmDialog(null, ft, "Change Name", JOptionPane.OK_CANCEL_OPTION) != JOptionPane.OK_OPTION)
                     return;
                 if (changeNameActionProfilePanel(ft.getText()))
                     nameLabel.setText(ft.getText());
@@ -277,7 +258,7 @@ public abstract class MainFrame extends JFrame implements Runnable {
             @Override
             protected void addMoneyAction() {
                 var mt = new JTextField("Money Amount(int)....");
-                if (JOptionPane.showConfirmDialog(null, mt) != JOptionPane.OK_OPTION)
+                if (JOptionPane.showConfirmDialog(null, mt, "Add Money", JOptionPane.OK_CANCEL_OPTION) != JOptionPane.OK_OPTION)
                     return;
                 try {
                     if (addMoneyActionProfilePanel(Integer.parseInt(mt.getText())))
@@ -301,6 +282,16 @@ public abstract class MainFrame extends JFrame implements Runnable {
             }
 
             @Override
+            protected ArrayList<String> getSubscribedMagazine() {
+                return getSubscribedMagazineProfilePanel();
+            }
+
+            @Override
+            protected ArrayList<String> getPublishedMagazine() {
+                return getPublishedMagazineProfilePanel();
+            }
+
+            @Override
             protected void backAction() {
                 goToMainState();
             }
@@ -312,8 +303,8 @@ public abstract class MainFrame extends JFrame implements Runnable {
             }
 
             @Override
-            protected String[] getPublisherNames() {
-                return getPublishersNameArraySubscribePanel();
+            protected HashMap<String, Integer> getMagazineInfo() {
+                return getMagazineInfoArraySubscribePanel();
             }
 
             @Override
@@ -340,10 +331,12 @@ public abstract class MainFrame extends JFrame implements Runnable {
     protected abstract String getNameProfilePanel();
     protected abstract int getMoneyProfilePanel();
     protected abstract Role getRoleProfilePanel();
+    protected abstract ArrayList<String> getPublishedMagazineProfilePanel();
+    protected abstract ArrayList<String> getSubscribedMagazineProfilePanel();
     ///
 
     /// subscribe panel
-    protected abstract String[] getPublishersNameArraySubscribePanel();
+    protected abstract HashMap<String, Integer> getMagazineInfoArraySubscribePanel();
     protected abstract void setSubscribedPublishersSubscribePanel(ArrayList<String> selectedPublisherNames);
     ///
 
@@ -371,7 +364,7 @@ public abstract class MainFrame extends JFrame implements Runnable {
     protected abstract void decrementLikeByIndex(int index);
     ///
 
-    private void commentAction(MainPanel mainPanel, int index) {
+    private void commentAction(int index) {
         var cd = new CommentDialog() {
             @Override
             protected void commitAction() {
@@ -397,14 +390,19 @@ public abstract class MainFrame extends JFrame implements Runnable {
         } else if (state == State.MAIN) {
             setContentPane(mainPanel);
         } else if (state == State.PROFILE) {
+            profilePanel.prepare();
             setContentPane(profilePanel);
         } else if (state == State.POST) {
+            postPanel.prepare();
             setContentPane(postPanel);
         } else if (state == State.SUBSCRIBE) {
+            subscribePanel.prepare();
             setContentPane(subscribePanel);
         } else if (state == State.START) {
             setContentPane(startPanel);
         }
+        repaint();
+        revalidate();
     }
 
     private void handleMenuBar() {
@@ -427,6 +425,11 @@ public abstract class MainFrame extends JFrame implements Runnable {
         JMenuItem tray = new JMenuItem("System Tray");
         tray.setAccelerator(KeyStroke.getKeyStroke('W', InputEvent.CTRL_DOWN_MASK));
         viewMenu.add(tray);
+
+        JMenuItem toggleDarkTheme = new JMenuItem("Toggle Dark Theme");
+        toggleDarkTheme.addActionListener(e -> toggleDarkTheme());
+        toggleDarkTheme.setAccelerator(KeyStroke.getKeyStroke('T', InputEvent.CTRL_DOWN_MASK));
+        viewMenu.add(toggleDarkTheme);
 
         menuBar.add(fileMenu);
         menuBar.add(viewMenu);
@@ -526,6 +529,60 @@ public abstract class MainFrame extends JFrame implements Runnable {
 
     private void closeAction() {
         System.exit(0);
+    }
+
+    public void toggleDarkTheme() {
+        isDarkTheme = !isDarkTheme;
+        handleUIManager();
+        repaint();
+    }
+
+    private void handleUIManager() {
+        if (isFirstCompile)
+            try {
+                for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                    if ("Nimbus".equals(info.getName())) {
+                        javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                        break;
+                    }
+                }
+            } catch (Exception e) {
+                System.exit(-1);
+            }
+
+        isFirstCompile = false;
+
+        if (isDarkTheme) {
+            UIManager.put("control", Color.DARK_GRAY.darker());
+            UIManager.put("info", new Color(128,128,128));
+            UIManager.put("nimbusBase", new Color( 18, 30, 49));
+            UIManager.put("nimbusAlertYellow", new Color( 248, 187, 0));
+            UIManager.put("nimbusDisabledText", new Color( 128, 128, 128));
+            UIManager.put("nimbusFocus", new Color(115,164,209));
+            UIManager.put("nimbusGreen", new Color(176,179,50));
+            UIManager.put("nimbusInfoBlue", new Color( 66, 139, 221));
+            UIManager.put("nimbusLightBackground", Color.DARK_GRAY);
+            UIManager.put("nimbusOrange", new Color(191,98,4));
+            UIManager.put("nimbusRed", new Color(169,46,34) );
+            UIManager.put("nimbusSelectedText", new Color( 255, 255, 255));
+            UIManager.put("nimbusSelectionBackground", new Color( 104, 93, 156));
+            UIManager.put("text", new Color( 230, 230, 230));
+        } else {
+            UIManager.put("control", new Color(214,217,223));
+            UIManager.put("info", new Color(242,242,189));
+            UIManager.put("nimbusBase", new Color( 51,98,140));
+            UIManager.put("nimbusAlertYellow", new Color( 255,220,35));
+            UIManager.put("nimbusDisabledText", new Color( 142,143,145));
+            UIManager.put("nimbusFocus", new Color(115,164,209));
+            UIManager.put("nimbusGreen", new Color(176,179,50));
+            UIManager.put("nimbusInfoBlue", new Color( 47,92,180));
+            UIManager.put("nimbusLightBackground", new Color(255,255,255));
+            UIManager.put("nimbusOrange", new Color(191,98,4));
+            UIManager.put("nimbusRed", new Color(169,46,34) );
+            UIManager.put("nimbusSelectedText", new Color( 255, 255, 255));
+            UIManager.put("nimbusSelectionBackground", new Color( 57,105,138));
+            UIManager.put("text", new Color( 0, 0, 0));
+        }
     }
 
     @Override

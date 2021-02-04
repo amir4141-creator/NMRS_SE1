@@ -31,7 +31,6 @@ public abstract class MagazinePanel extends JPanel {
         commentButton.addActionListener(e -> commentButtonAction());
         isLiked = false;
         downloadButton = new JButton("Download");
-        downloadButton.addActionListener(e -> downloadButtonAction());
         likeButton = new JButton("Like - " + getLikeNumber());
         likeButton.setForeground(Color.RED.darker());
         likeButton.addActionListener(e -> likeButtonAction());
@@ -42,7 +41,11 @@ public abstract class MagazinePanel extends JPanel {
         titleLabel.setPreferredSize(new Dimension(Integer.MAX_VALUE, 40));
         titleLabel.setFont(new Font("serif", Font.BOLD, 28));
 
-        downloadButton.setEnabled(isDownloadable());
+        if (isDownloadable()) {
+            downloadButton.addActionListener(e -> downloadButtonAction());
+        } else {
+            downloadButton.addActionListener(e -> JOptionPane.showMessageDialog(null, "Not Downloadable", "Error", JOptionPane.ERROR_MESSAGE));
+        }
 
         var wrapper = new JPanel(new GridLayout(1, 0));
         wrapper.add(likeButton);
