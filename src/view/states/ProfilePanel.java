@@ -1,6 +1,6 @@
 package view.states;
 
-import model.Role;
+import models.Role;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
