@@ -1,7 +1,6 @@
 package controller;
 
 import models.*;
-import org.w3c.dom.ls.LSOutput;
 import view.*;
 
 import javax.swing.*;
@@ -96,7 +95,6 @@ public class Controller {
                 return Role.CUSTOMER;
             }
 
-            //--------------------------------------------------------------------------------------------//todo
             @Override
             protected ArrayList<String> getPublishedMagazineProfilePanel() {
                 Publisher publisher;
@@ -138,7 +136,6 @@ public class Controller {
                 }
             }
 
-            //---------------------------------------------------------------------------------------------
             @Override
             protected String getTitle(int index) {
                 return data.getContents().get(index).getTitle();
