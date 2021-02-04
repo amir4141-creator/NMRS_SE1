@@ -1,6 +1,7 @@
 package controller;
 
 import models.*;
+import org.w3c.dom.ls.LSOutput;
 import view.*;
 
 import javax.swing.*;
@@ -10,10 +11,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Controller {
+    public final static SystemData data;
+
+    static {
+        data = new SystemData();
+    }
 
     public static void run() {
         SwingUtilities.invokeLater(new MainFrame() {
-            public SystemData data;
+
+
             @Override
             protected boolean signUpActionLoginPanel(String username, String password, Role role) {
                 if (data.userExist(username))
@@ -23,13 +30,17 @@ public class Controller {
                     data.addCustomer(new Publisher(username, password));
                 else
                     data.addCustomer(new Customer(username, password));
-
+                loginActionLoginPanel(username, password);
                 return true;
             }
 
             @Override
             protected boolean loginActionLoginPanel(String username, String password) {
-                return data.userExist(username, password);
+                if (data.userExist(username, password)) {
+                    data.setOnline(data.getCustomer(username));
+                    return true;
+                }
+                return false;
             }
 
             @Override
@@ -42,7 +53,7 @@ public class Controller {
 
             @Override
             protected void deleteActionProfilePanel() {
-                data.setOnline(-1);
+                data.setOnline(null);
                 data.removeCustomerAccount(data.getOnlineCustomer());
             }
 
@@ -59,7 +70,7 @@ public class Controller {
                 if (changeMoneyAmount < 0)
                     return false;
                 data.getOnlineCustomer().addMoney(changeMoneyAmount);
-                return false;
+                return true;
             }
 
             @Override
@@ -71,34 +82,63 @@ public class Controller {
             protected int getMoneyProfilePanel() {
                 return data.getOnlineCustomer().getMoney();
             }
+
             //todo : AMIR : there is bug here i think
             @Override
             protected Role getRoleProfilePanel() {
+//                if(data.getOnlineIndex() <0){
+//                    return null;
+//                }else {
                 if (data.getOnlineCustomer() instanceof Publisher)
                     return Role.PUBLISHER;
+//                }
+
                 return Role.CUSTOMER;
             }
-//--------------------------------------------------------------------------------------------//todo
+
+            //--------------------------------------------------------------------------------------------//todo
             @Override
             protected ArrayList<String> getPublishedMagazineProfilePanel() {
-                return null;
+                Publisher publisher;
+                if (data.getOnlineCustomer() instanceof Publisher)
+                    publisher = (Publisher) data.getOnlineCustomer();
+                else
+                    return new ArrayList<>();
+                ArrayList<String> titles = new ArrayList<>();
+                for (Content content : publisher.getPublished()) {
+                    titles.add(content.getTitle());
+                }
+                return titles;
             }
 
             @Override
             protected ArrayList<String> getSubscribedMagazineProfilePanel() {
-                return null;
+                ArrayList<String> titles = new ArrayList<>();
+                for (Content content : data.getOnlineCustomer().getSubscribed()) {
+                    titles.add(content.getTitle());
+                }
+                return titles;
             }
 
             @Override
             protected HashMap<String, Integer> getMagazineInfoArraySubscribePanel() {
-                return null;
+                HashMap<String, Integer> map = new HashMap<>();
+                for (Content content : data.getContents()){
+                    if(content.getPrice() !=0){
+                        map.put(content.getTitle(),content.getPrice());
+                    }
+                }
+                return map;
             }
 
             @Override
             protected void setSubscribedPublishersSubscribePanel(ArrayList<String> selectedPublisherNames) {
-
+                for (String title: selectedPublisherNames){
+                    data.getOnlineCustomer().subscribe(data.getContentByTitle(title));
+                }
             }
-//---------------------------------------------------------------------------------------------
+
+            //---------------------------------------------------------------------------------------------
             @Override
             protected String getTitle(int index) {
                 return data.getContents().get(index).getTitle();
@@ -122,7 +162,7 @@ public class Controller {
             @Override
             protected ArrayList<Integer> getMagazineIndexList() {
                 ArrayList<Integer> indexes = new ArrayList<>();
-                for(int i = 0 ; i< data.getContents().size() ; i++){
+                for (int i = 0; i < data.getContents().size(); i++) {
                     indexes.add(i);
                 }
                 return indexes;
@@ -130,20 +170,19 @@ public class Controller {
 
             @Override
             protected void logoutButtonAction() {
-                data.setOnline(-1);
+                data.setOnline(null);
             }
 
             @Override
             protected void downloadButtonAction(int index) {
-                String path = "./Downloads/" + data.getOnlineCustomer().getUserName() + "/";
+                String path = ".\\Downloads\\" + data.getOnlineCustomer().getUserName() + "\\";
                 File file = new File(path);
                 try {
-                    file.mkdir();
-                    FileWriter writer = new FileWriter( path + data.getContents().get(index).getTitle() + ".txt");
+                    file.mkdirs();
+                    FileWriter writer = new FileWriter(path + data.getContents().get(index).getTitle() + ".txt");
                     writer.write(data.getContents().get(index).getData());
                     writer.close();
-                }
-                catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }

@@ -12,4 +12,8 @@ public class Publisher extends Customer{
     public void publish(Content newContent){
         published.add(newContent);
     }
+
+    public ArrayList<Content> getPublished() {
+        return published;
+    }
 }

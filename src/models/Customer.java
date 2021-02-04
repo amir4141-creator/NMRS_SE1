@@ -47,6 +47,10 @@ public class Customer {
         }
     }
 
+    public ArrayList<Content> getSubscribed() {
+        return subscribed;
+    }
+
     public void changeName(String newName){
         userName = newName;
     }

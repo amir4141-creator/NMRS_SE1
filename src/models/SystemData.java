@@ -7,19 +7,19 @@ public class SystemData {
     private ArrayList<Publisher> publishers;
 
     private ArrayList<Content> contents;
-//    private ArrayList<Content> publicContents;
 
-    private int onlineIndex;
+
+    private Customer onlineCustomer;
 
     public SystemData() {
         customers = new ArrayList<Customer>();
         publishers = new ArrayList<Publisher>();
 
         contents = new ArrayList<Content>();
-//        publicContents = new ArrayList<Content>();
-
-        onlineIndex = -1;
+        onlineCustomer = null;
     }
+
+
 
     public ArrayList<Customer> getCustomers() {
         return customers;
@@ -29,12 +29,14 @@ public class SystemData {
         return publishers;
     }
 
-    public void setOnline(int onlineIndex) {
-        this.onlineIndex = onlineIndex;
+    public void setOnline(Customer onlineCustomer) {
+        this.onlineCustomer = onlineCustomer;
     }
 
+
     public Customer getOnlineCustomer() {
-        return customers.get(onlineIndex);
+        return onlineCustomer;
+
     }
 
     public void addCustomer(Customer customerToAdd) {
@@ -53,11 +55,23 @@ public class SystemData {
         customers.remove(customerToDelete);
     }
 
-    public Boolean userExist(String userName, String password){
+    public Boolean userExist(String userName, String password) {
         if (checkCustomerExist(userName, password))
             return true;
-        else if(checkPublisherExist(userName, password))
+        else if (checkPublisherExist(userName, password))
             return true;
+        return false;
+    }
+
+    public boolean userExist(String name) {
+        for (Customer customer : customers) {
+            if (customer.getUserName().equals(name))
+                return true;
+        }
+        for (Publisher publisher : publishers) {
+            if (publisher.getUserName().equals(name))
+                return true;
+        }
         return false;
     }
 
@@ -79,7 +93,7 @@ public class SystemData {
         return false;
     }
 
-    public void publishContent(Publisher publisher, Content content){
+    public void publishContent(Publisher publisher, Content content) {
         publisher.publish(content);
         contents.add(content);
 //        if (content.getPrice() == 0){
@@ -89,31 +103,33 @@ public class SystemData {
 //        }
     }
 
-    public Customer getCustomer(String userName){
-        for(Customer customer: customers){
-            if(customer.getUserName().equals(userName))
+    public Customer getCustomer(String userName) {
+        for (Customer customer : customers) {
+            if (customer.getUserName().equals(userName))
                 return customer;
+        }
+        for (Publisher publisher : publishers) {
+            if (publisher.getUserName().equals(userName))
+                return publisher;
         }
         return null;
     }
 
-    public int getLastContentIndex(){
-        return contents.size()-1;
+    public int getLastContentIndex() {
+        return contents.size() - 1;
     }
 
-    public boolean userExist(String name){
-        for (Customer customer: customers) {
-            if(customer.getUserName().equals(name))
-                return true;
-        }
-        for(Publisher publisher: publishers){
-            if(publisher.getUserName().equals(name))
-                return true;
-        }
-        return false;
-    }
 
-    public ArrayList<Content> getContents(){
+    public ArrayList<Content> getContents() {
         return contents;
+    }
+
+    public Content getContentByTitle(String title){
+        for (Content content: contents){
+            if(content.getTitle().equals(title)){
+                return content;
+            }
+        }
+        return null;
     }
 }
