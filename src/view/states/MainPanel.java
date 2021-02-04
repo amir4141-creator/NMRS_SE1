@@ -1,6 +1,6 @@
 package view.states;
 
-import model.Role;
+import models.Role;
 import view.CommentDialog;
 import view.MagazinePanel;
 
