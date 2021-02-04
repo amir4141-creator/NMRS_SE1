@@ -7,13 +7,13 @@ import javax.swing.*;
 import java.io.File;
 import java.io.FileWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Controller {
 
     public static void run() {
         SwingUtilities.invokeLater(new MainFrame() {
             public SystemData data;
-
             @Override
             protected boolean signUpActionLoginPanel(String username, String password, Role role) {
                 if (data.userExist(username))
@@ -33,16 +33,11 @@ public class Controller {
             }
 
             @Override
-            protected int postActionPostPanel(String title, String text, int price, boolean isDownloadable, boolean isPublic) {
-                Content content = new Content(title, text, price, isDownloadable);
-                data.publishContent((Publisher) data.getOnlineCustomer(), content);
+            protected int postActionPostPanel(String title, String content, int price,
+                                              boolean isDownloadable, boolean isPublic) {
+                Content contentPost = new Content(title, content, price, isDownloadable);
+                data.publishContent((Publisher) data.getOnlineCustomer(), contentPost);
                 return data.getLastContentIndex();
-//                if(isPublic) {
-//                    ui.getPublicPage().addContentBox(ContentBox(content));
-//                }
-//                else{
-//                    ui.getPublicPage().addContentBox(ContentBox(content));
-//                }
             }
 
             @Override
@@ -76,28 +71,34 @@ public class Controller {
             protected int getMoneyProfilePanel() {
                 return data.getOnlineCustomer().getMoney();
             }
-
+            //todo : AMIR : there is bug here i think
             @Override
             protected Role getRoleProfilePanel() {
                 if (data.getOnlineCustomer() instanceof Publisher)
                     return Role.PUBLISHER;
                 return Role.CUSTOMER;
             }
+//--------------------------------------------------------------------------------------------//todo
+            @Override
+            protected ArrayList<String> getPublishedMagazineProfilePanel() {
+                return null;
+            }
 
             @Override
-            protected String[] getPublishersNameArraySubscribePanel() {
-                String[] publishersName = new String[data.getPublishers().size()];
-                for (int i = 0; i < data.getPublishers().size(); i++) {
-                    publishersName[i] = data.getPublishers().get(i).getUserName();
-                }
-                return publishersName;
+            protected ArrayList<String> getSubscribedMagazineProfilePanel() {
+                return null;
+            }
+
+            @Override
+            protected HashMap<String, Integer> getMagazineInfoArraySubscribePanel() {
+                return null;
             }
 
             @Override
             protected void setSubscribedPublishersSubscribePanel(ArrayList<String> selectedPublisherNames) {
-                //todo: amir : I did not understand it
-            }
 
+            }
+//---------------------------------------------------------------------------------------------
             @Override
             protected String getTitle(int index) {
                 return data.getContents().get(index).getTitle();
@@ -120,7 +121,6 @@ public class Controller {
 
             @Override
             protected ArrayList<Integer> getMagazineIndexList() {
-                //TODO : amir :  why integer? i can send contents sizes THEN you have 0 till content size as index
                 ArrayList<Integer> indexes = new ArrayList<>();
                 for(int i = 0 ; i< data.getContents().size() ; i++){
                     indexes.add(i);
@@ -150,7 +150,7 @@ public class Controller {
 
             @Override
             protected ArrayList<String[]> getCommentByIndex(int index) {
-               return data.getContents().get(index).getComments();
+                return data.getContents().get(index).getComments();
             }
 
             @Override
