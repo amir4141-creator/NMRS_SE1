@@ -52,8 +52,8 @@ public class Controller {
 
             @Override
             protected void deleteActionProfilePanel() {
-                data.setOnline(null);
                 data.removeCustomerAccount(data.getOnlineCustomer());
+                data.setOnline(null);
             }
 
             @Override
