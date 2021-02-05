@@ -94,7 +94,7 @@ public abstract class ProfilePanel extends JPanel {
     }
 
     private void privacyAction() {
-        String message = "null";
+        String message = "This is privacy policy";
         JOptionPane.showMessageDialog(null, message, "Privacy Policy", JOptionPane.INFORMATION_MESSAGE);
     }
 
