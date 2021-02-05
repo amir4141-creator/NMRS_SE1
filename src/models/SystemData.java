@@ -96,6 +96,11 @@ public class SystemData {
     public void publishContent(Publisher publisher, Content content) {
         publisher.publish(content);
         contents.add(content);
+//        if (content.getPrice() == 0){
+//            publicContents.add(content);
+//        }else {
+//            storeContents.add(content);
+//        }
     }
 
     public Customer getCustomer(String userName) {

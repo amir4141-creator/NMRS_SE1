@@ -64,9 +64,15 @@ public abstract class ProfilePanel extends JPanel {
         add(wrapper, BorderLayout.NORTH);
 
         var wrapper2 = new JPanel(new GridLayout(0, 1));
-        wrapper2.add(new JScrollPane(subscribed));
+        var wrapper4 = new JPanel((new BorderLayout()));
+        wrapper4.add(new JScrollPane(subscribed), BorderLayout.CENTER);
+        wrapper4.setBorder(BorderFactory.createTitledBorder("Subscribed Magazines"));
+        wrapper2.add(wrapper4);
+        var wrapper5 = new JPanel((new BorderLayout()));
+        wrapper5.add(new JScrollPane(published), BorderLayout.CENTER);
+        wrapper5.setBorder(BorderFactory.createTitledBorder("Published Magazines"));
         if (getRole() == Role.PUBLISHER)
-            wrapper2.add(new JScrollPane(published));
+            wrapper2.add(wrapper5);
 
         add(wrapper2, BorderLayout.CENTER);
 
@@ -94,6 +100,10 @@ public abstract class ProfilePanel extends JPanel {
 
     protected void updateMoney() {
         moneyLabel.setText("   Money: " + getMoney());
+    }
+
+    protected void updateName() {
+        nameLabel.setText("   Name: " + getCustomerName());
     }
 
     protected abstract void deleteAccountAction();

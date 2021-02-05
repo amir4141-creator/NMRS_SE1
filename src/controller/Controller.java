@@ -19,7 +19,6 @@ public class Controller {
     public static void run() {
         SwingUtilities.invokeLater(new MainFrame() {
 
-
             @Override
             protected boolean signUpActionLoginPanel(String username, String password, Role role) {
                 if (data.userExist(username))
@@ -31,6 +30,16 @@ public class Controller {
                     data.addCustomer(new Customer(username, password));
                 loginActionLoginPanel(username, password);
                 return true;
+            }
+
+            @Override
+            protected ArrayList<Integer> getPublicIndexesStartPanel() {
+                var list = new ArrayList<Integer>();
+                data.getContents().forEach(e -> {
+                    if (e.getPrice() == 0)
+                        list.add(data.getContents().indexOf(e));
+                });
+                return list;
             }
 
             @Override
@@ -95,6 +104,7 @@ public class Controller {
                 return Role.CUSTOMER;
             }
 
+            //--------------------------------------------------------------------------------------------//todo
             @Override
             protected ArrayList<String> getPublishedMagazineProfilePanel() {
                 Publisher publisher;
@@ -136,6 +146,7 @@ public class Controller {
                 }
             }
 
+            //---------------------------------------------------------------------------------------------
             @Override
             protected String getTitle(int index) {
                 return data.getContents().get(index).getTitle();
@@ -182,6 +193,11 @@ public class Controller {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+            }
+
+            @Override
+            protected boolean isOnline() {
+                return data.getOnlineCustomer() != null;
             }
 
             @Override

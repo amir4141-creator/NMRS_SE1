@@ -1,6 +1,7 @@
 package models;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Customer {
 
@@ -43,6 +44,7 @@ public class Customer {
     public void subscribe(Content content){
         if(!customerHasContent(content) && getMoney() > content.getPrice() ){
             subscribed.add(content);
+            money -= content.getPrice();
         }
     }
 

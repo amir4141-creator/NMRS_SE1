@@ -55,14 +55,16 @@ public abstract class MagazinePanel extends JPanel {
 
         add(wrapper, BorderLayout.SOUTH);
 
-        likeButton.addActionListener(e -> {
-            isLiked = !isLiked;
-            if (isLiked) {
-                likeButton.setForeground(Color.GREEN.darker());
-            } else {
-                likeButton.setForeground(Color.RED.darker());
-            }
-        });
+        likeButton.setForeground(Color.RED.darker());
+
+//        likeButton.addActionListener(e -> {
+//            isLiked = !isLiked;
+//            if (isLiked) {
+//                likeButton.setForeground(Color.GREEN.darker());
+//            } else {
+//                likeButton.setForeground(Color.RED.darker());
+//            }
+//        });
 
         var f = new Font("serif", Font.PLAIN, 20);
         likeButton.setFont(f);

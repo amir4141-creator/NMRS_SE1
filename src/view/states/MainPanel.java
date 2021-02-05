@@ -1,7 +1,6 @@
 package view.states;
 
 import models.Role;
-import view.CommentDialog;
 import view.MagazinePanel;
 
 import javax.swing.*;
@@ -92,11 +91,11 @@ public abstract class MainPanel extends JPanel {
 
             @Override
             protected void likeButtonAction() {
-                if (isLiked) {
+//                if (isLiked) {
                     incrementLikeNumber(index);
-                } else {
-                    decrementLikeNumber(index);
-                }
+//                } else {
+//                    decrementLikeNumber(index);
+//                }
                 updateLikeButton();
             }
 
